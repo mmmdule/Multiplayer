@@ -34,28 +34,28 @@ def setButtons(message):
         index += 3
 
 def receive_messages(client_socket):
-    
-    while True:
+    flag=True
+    while flag:
         try:
             message = client_socket.recv(1024).decode('utf-8')
             if len(message)==1:
-
+                flag=False
                 messagebox.showinfo("Kraj igre",f"Pobedio je igrac broj {message}.")
                 client_socket.close()
-                root.destroy()
 
-
-            print(f"{message}")
-            setButtons(message)
+            else:
+                setButtons(message)
         except Exception as e:
             print(e)
             print("Connection closed by the server.")
             client_socket.close()
             break
-
+    root.destroy()
 def connect_to_server_thread():
     thread=threading.Thread(target=connect_to_server)
+    thread.daemon=True
     thread.start()
+
 def connect_to_server():
     global client_socket
     ip_address = ip_entry.get()
