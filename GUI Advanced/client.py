@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 from tkinter import messagebox
 import socket
@@ -41,7 +42,8 @@ def receive_messages(client_socket):
 
                 messagebox.showinfo("Kraj igre",f"Pobedio je igrac broj {message}.")
                 client_socket.close()
-                quit()
+                root.destroy()
+
 
             print(f"{message}")
             setButtons(message)
