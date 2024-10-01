@@ -6,9 +6,9 @@ import threading
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 buttons = []
 def open_new_window():
-    root = tk.Tk()
-    root.title("3x3 Button Grid")
-    frame = tk.Frame(root)
+    prozor=tk.Toplevel(root)
+    prozor.title("3x3 Button Grid")
+    frame = tk.Frame(prozor)
     frame.pack(pady=20)
 
     # Create 3x3 grid of buttons
@@ -17,7 +17,7 @@ def open_new_window():
         for j in range(3):
             create_button(frame, button_number, i, j)
             button_number += 1
-    root.mainloop()
+
 def setButtons(message):
     global buttons
     rows = message.split("\n")
