@@ -1,7 +1,7 @@
 import socket
 import threading
 import os
-#peglaa
+#pegla
 os.system("cls")
 
 def receive_messages(client_socket):
