@@ -38,6 +38,7 @@ def receive_messages(client_socket):
         try:
             message = client_socket.recv(1024).decode('utf-8')
             if len(message)==1:
+
                 messagebox.showinfo("Kraj igre",f"Pobedio je igrac broj {message}.")
                 client_socket.close()
                 quit()
