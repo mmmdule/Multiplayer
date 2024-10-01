@@ -1,6 +1,7 @@
 import socket
 import threading
 import os
+import time
 
 clients = []
 values = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -17,7 +18,7 @@ combo_indices = [
     [2, 4, 6],
 ]
 
-def end_game():
+def reset_server():
     global clients
     for client in clients:
         client.close()
@@ -49,7 +50,8 @@ def handle_client(client_socket, client_address):
             broadcast(print_matrix())
             if game_won_by(values) != 0:
                 broadcast(str(game_won_by(values)))
-                end_game()
+                time.sleep(3)
+                #reset_server()
                 break
         else:
             print (f"{client_address}: Tried to make an illegal move")
@@ -66,11 +68,11 @@ def handle_client(client_socket, client_address):
 
 def broadcast(message):
     for client in clients:
-        try:
-            client.send(message.encode('utf-8'))
-        except:
-            clients.remove(client)
-            client.close()
+        # try:
+        client.send(message.encode('utf-8'))
+        # except:
+        #     clients.remove(client)
+        #     client.close()
 
 def main():    
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
