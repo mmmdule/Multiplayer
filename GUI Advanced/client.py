@@ -5,7 +5,19 @@ import threading
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 buttons = []
+def open_new_window():
+    root = tk.Tk()
+    root.title("3x3 Button Grid")
+    frame = tk.Frame(root)
+    frame.pack(pady=20)
 
+    # Create 3x3 grid of buttons
+    button_number = 1
+    for i in range(3):
+        for j in range(3):
+            create_button(frame, button_number, i, j)
+            button_number += 1
+    root.mainloop()
 def setButtons(message):
     global buttons
     rows = message.split("\n")
@@ -33,15 +45,18 @@ def receive_messages(client_socket):
             client_socket.close()
             break
 
+def connect_to_server_thread():
+    thread=threading.Thread(target=connect_to_server)
+    thread.start()
 def connect_to_server():
     global client_socket
     ip_address = ip_entry.get()
     try:
         client_socket.connect((ip_address, 12345))  # Replace 12345 with your server's port
         messagebox.showinfo("Connection Status", "Connected to the server successfully!")
-        receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))
-        receive_thread.start()
         open_new_window()
+        receive_messages(client_socket)
+
     except Exception as e:
         messagebox.showerror("Connection Status", f"Failed to connect to the server: {e}")
 
@@ -58,19 +73,7 @@ def create_button(frame, text, row, col):
     button.grid(row=row, column=col, padx=5, pady=5)
     buttons.append(button)
 
-def open_new_window():
-    root = tk.Tk()
-    root.title("3x3 Button Grid")
 
-    frame = tk.Frame(root)
-    frame.pack(pady=20)
-
-    # Create 3x3 grid of buttons
-    button_number = 1
-    for i in range(3):
-        for j in range(3):
-            create_button(frame, button_number, i, j)
-            button_number += 1
 
 root = tk.Tk()
 root.title("Server Connection")
@@ -82,10 +85,7 @@ ip_label.pack(pady=10)
 ip_entry = tk.Entry(root)
 ip_entry.pack(pady=5)
 
-connect_button = tk.Button(root, text="Connect", command=connect_to_server)
+connect_button = tk.Button(root, text="Connect", command=connect_to_server_thread)
 connect_button.pack(pady=20)
-
-
-
 
 root.mainloop()
