@@ -23,7 +23,7 @@ def setButtons(message):
     rows = message.split("\n")
     rows.pop(1)
     rows.pop(2)
-    index = 0
+    index= 0
     for row in rows:
         values = row.split("║")
         buttons[index]["text"] = values[0]
