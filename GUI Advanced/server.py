@@ -6,6 +6,29 @@ clients = []
 values = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 move = 0
 
+combo_indices = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+]
+
+def end_game():
+    global clients
+    for client in clients:
+        client.close()
+    clients.clear()
+
+def game_won_by(board):
+    winner = 0
+    for index in combo_indices:
+        if board[index[0]] == board[index[1]] == board[index[2]] != ' ':
+            winner = 1 if board[index[0]] == 'X' else 2
+    return winner
 
 def print_matrix():
     string = f"{values[0]}║{values[1]}║{values[2]}\n═╬═╬═\n{values[3]}║{values[4]}║{values[5]}\n═╬═╬═\n{values[6]}║{values[7]}║{values[8]}"
@@ -15,29 +38,33 @@ def handle_client(client_socket, client_address):
     print(f"Connection from {client_address} has been established!")
     global move
     while True:
-        try:
-            message = int(client_socket.recv(1024).decode('utf-8'))
-            if client_socket == clients[move] and values[message - 1] == ' ':
-                values[message - 1] = 'O' if move == 1 else 'X'
-                move = 1 if move == 0 else 0
-                #if not message:
-                #    break
-                print(f"{client_address}: {message}")
-                broadcast(print_matrix(), client_socket)
-            else:
-                print (f"{client_address}: Tried to make an illegal move")
-                broadcast(print_matrix(), client_socket) #da bi se ocistio display client-a
-            os.system("cls")
-            print(print_matrix())
-        except Exception as error:
-            clients.remove(client_socket)
-            client_socket.close()
-            print(error)
-            print(f"Stigo message posle errora: {message} eo ga tu")
-            print(type(message))
-            break
+        #try:
+        message = int(client_socket.recv(1024).decode('utf-8'))
+        if client_socket == clients[move] and values[message - 1] == ' ':
+            values[message - 1] = 'O' if move == 1 else 'X'
+            move = 1 if move == 0 else 0
+            #if not message:
+            #    break
+            print(f"{client_address}: {message}")
+            broadcast(print_matrix())
+            if game_won_by(values) != 0:
+                broadcast(str(game_won_by(values)))
+                end_game()
+                break
+        else:
+            print (f"{client_address}: Tried to make an illegal move")
+            broadcast(print_matrix()) #da bi se ocistio display client-a
+        os.system("cls")
+        print(print_matrix())
+        # except Exception as error:
+        #     clients.remove(client_socket)
+        #     client_socket.close()
+        #     print(error)
+        #     print(f"Stigo message posle errora: {message} eo ga tu")
+        #     print(type(message))
+        #     break
 
-def broadcast(message, sender_socket):
+def broadcast(message):
     for client in clients:
         try:
             client.send(message.encode('utf-8'))
