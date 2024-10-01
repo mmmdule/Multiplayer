@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import socket
 import threading
+import os
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 buttons = []
@@ -36,7 +37,11 @@ def receive_messages(client_socket):
     while True:
         try:
             message = client_socket.recv(1024).decode('utf-8')
-            
+            if len(message)==1:
+                messagebox.showinfo("Kraj igre",f"Pobedio je igrac broj {message}.")
+                client_socket.close()
+                quit()
+
             print(f"{message}")
             setButtons(message)
         except Exception as e:
