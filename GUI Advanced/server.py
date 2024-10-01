@@ -39,8 +39,11 @@ def handle_client(client_socket, client_address):
     print(f"Connection from {client_address} has been established!")
     global move
     while True:
-        #try:
-        message = int(client_socket.recv(1024).decode('utf-8'))
+        message = client_socket.recv(1024).decode('utf-8')
+        try:
+            message = int(message)
+        except:
+            break
         if client_socket == clients[move] and values[message - 1] == ' ':
             values[message - 1] = 'O' if move == 1 else 'X'
             move = 1 if move == 0 else 0
@@ -58,21 +61,10 @@ def handle_client(client_socket, client_address):
             broadcast(print_matrix()) #da bi se ocistio display client-a
         os.system("cls")
         print(print_matrix())
-        # except Exception as error:
-        #     clients.remove(client_socket)
-        #     client_socket.close()
-        #     print(error)
-        #     print(f"Stigo message posle errora: {message} eo ga tu")
-        #     print(type(message))
-        #     break
 
 def broadcast(message):
     for client in clients:
-        # try:
         client.send(message.encode('utf-8'))
-        # except:
-        #     clients.remove(client)
-        #     client.close()
 
 def main():    
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
